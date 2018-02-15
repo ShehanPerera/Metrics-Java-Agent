@@ -11,7 +11,7 @@ Install the package
 `mvn clean install`
 
 <b><h2>STEP 4</h2></b>
-Copy agent-apim-1.0-SNAPSHOT.jar to ballerina gateway directory 
+Copy agent-apim-1.0-SNAPSHOT.jar from target to ballerina gateway directory 
 (wso2apim-gateway-3.0.0-m13)
 
 <b><h2>STEP 5</h2></b>
