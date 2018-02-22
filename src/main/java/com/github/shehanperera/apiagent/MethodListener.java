@@ -37,7 +37,6 @@ public class MethodListener {
                                           @Advice.FieldValue(value = "contextTimer") Timer.Context contextTimer,
                                           @Advice.FieldValue(value = "isClientConnector") boolean isClientConnector,
                                           @Advice.FieldValue(value = "context") Context context) {
-
         MetricServer metricServer = MetricServer.getInstance();
         if (isClientConnector) {
             if (carbonMessage.isFaulty()) {
