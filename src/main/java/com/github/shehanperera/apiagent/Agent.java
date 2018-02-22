@@ -18,15 +18,22 @@ import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.metrics.core.Timer;
 
 import java.lang.instrument.Instrumentation;
 
+/**
+ * Metrics Java Agent for APIM-3.0
+ */
 public class Agent {
+
+    private static final Logger logger = LoggerFactory.getLogger(Agent.class);
 
     public static void premain(String arguments, Instrumentation instrumentation) {
 
-        System.out.println("Premain");
+        logger.info("Premain");
         /* Create an agent to attach to ballerina backend
         *
         * define new private fields to BalConnectorCallback class
@@ -35,10 +42,10 @@ public class Agent {
         * Advice constructor for start Metrics timer, get request size
         * Advice done method for stop Metrics timer
         *
-        * */
+        */
         new AgentBuilder.Default()
                 .with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
-                .type(ElementMatchers.nameContains("BalConnectorCallback"))
+                .type((ElementMatchers.nameEndsWith("BalConnectorCallback")))
                 .transform((builder, typeDescription, classLoader, module) -> builder
                         .defineField("contextTimer", Timer.Context.class, Visibility.PRIVATE)
                         .defineField("isClientConnector", boolean.class, Visibility.PRIVATE)
@@ -47,6 +54,7 @@ public class Agent {
                         .method(ElementMatchers.nameContains("done"))
                         .intercept(Advice.to(MethodListener.class))
                 ).installOn(instrumentation);
+
     }
 }
 
