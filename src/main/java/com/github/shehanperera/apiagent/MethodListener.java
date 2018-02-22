@@ -15,25 +15,38 @@
 package com.github.shehanperera.apiagent;
 
 import net.bytebuddy.asm.Advice;
+import org.ballerinalang.bre.Context;
+import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.metrics.core.Timer;
 
+/**
+ * Instrument done method in BalConnectorCallback
+ */
 public class MethodListener {
 
     /**
-     * Resource invocation logic.
+     * Instrumentation of done method in BalConnectorCallback after it exit.
+     * This used for stop timer and find out backend response time and we can identify status of backend
      *
-     * @param contextTimer     newly defined Timer Context to stop
+     * @param contextTimer      newly defined Timer Context to stop
      * @param isClientConnector newly defined boolean for check ClientConnector
+     * @param carbonMessage     CarbonMessage parameter from done method
      */
-    @Advice.OnMethodExit
-    public static void exitFromDoneMethod(@Advice.FieldValue(value = "contextTimer") Timer.Context contextTimer,
-                                          @Advice.FieldValue(value = "isClientConnector") boolean isClientConnector)
-            throws Exception {
+    @Advice.OnMethodEnter
+    public static void enterDoneMethod(@Advice.Argument(0) CarbonMessage carbonMessage,
+                                          @Advice.FieldValue(value = "contextTimer") Timer.Context contextTimer,
+                                          @Advice.FieldValue(value = "isClientConnector") boolean isClientConnector,
+                                          @Advice.FieldValue(value = "context") Context context) {
 
+        MetricServer metricServer = MetricServer.getInstance();
         if (isClientConnector) {
+            if (carbonMessage.isFaulty()) {
+                metricServer.getBackendErrorRate().mark();
+            }
             contextTimer.stop();
         }
     }
 }
+
 
 
