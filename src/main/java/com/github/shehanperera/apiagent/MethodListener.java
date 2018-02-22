@@ -34,9 +34,10 @@ public class MethodListener {
      */
     @Advice.OnMethodEnter
     public static void enterDoneMethod(@Advice.Argument(0) CarbonMessage carbonMessage,
-                                          @Advice.FieldValue(value = "contextTimer") Timer.Context contextTimer,
-                                          @Advice.FieldValue(value = "isClientConnector") boolean isClientConnector,
-                                          @Advice.FieldValue(value = "context") Context context) {
+                                       @Advice.FieldValue(value = "contextTimer") Timer.Context contextTimer,
+                                       @Advice.FieldValue(value = "isClientConnector") boolean isClientConnector,
+                                       @Advice.FieldValue(value = "context") Context context) {
+
         MetricServer metricServer = MetricServer.getInstance();
         if (isClientConnector) {
             if (carbonMessage.isFaulty()) {
