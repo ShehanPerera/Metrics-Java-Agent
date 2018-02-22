@@ -44,7 +44,8 @@ public class ConstructorAdvice {
         try {
             if ("ClientConnector".equals(contextBallerina.actionInfo.getConnectorInfo().getName())) {
                 MetricServer metricServer = MetricServer.getInstance();
-                metricServer.getBackendRequestsSize().update(contextBallerina.getCarbonMessage().getFullMessageLength());
+                metricServer.getBackendRequestsSize()
+                        .update(contextBallerina.getCarbonMessage().getFullMessageLength());
                 contextTimer = metricServer.getBackendResponsesTime().start();
                 isClientConnector = true;
             }
