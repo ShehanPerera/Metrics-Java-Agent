@@ -18,32 +18,38 @@ import net.bytebuddy.asm.Advice;
 import org.ballerinalang.bre.Context;
 import org.wso2.carbon.metrics.core.Timer;
 
+/**
+ * Instrument BalConnectorCallback constructor
+ */
 public class ConstructorAdvice {
 
     /**
-     * Resource invocation logic.
+     * Instrument BalConnectorCallback constructor after it run we can start timer from here
+     * and get request size
      *
-     * @param parameters        ballerina context form constructor
-     * @param contextTimer      newly defined Timer Context to start
+     * @param contextBallerina  ballerina context form constructor
+     * @param contextTimer      newly defined Timer Context
      * @param isClientConnector newly defined boolean to set if  ClientConnector
+     *                          <p>
+     *                          ContextTimer used for get running time of backend and isClientConnector is used to
+     *                          identify whether request set to the backend or not.
      */
     @Advice.OnMethodExit
-    public static void exitFromConstructor(@Advice.AllArguments Object[] parameters,
-                                           @Advice.FieldValue(value = "contextTimer", readOnly = false) Timer.Context contextTimer,
-                                           @Advice.FieldValue(value = "isClientConnector", readOnly = false) boolean isClientConnector)
-            throws Exception {
+    public static void exitFromConstructor(@Advice.Argument(0) Context contextBallerina,
+                                           @Advice.FieldValue(value = "contextTimer", readOnly = false)
+                                                   Timer.Context contextTimer,
+                                           @Advice.FieldValue(value = "isClientConnector", readOnly = false)
+                                                   boolean isClientConnector) {
 
         try {
-            Context contextBal = (Context) parameters[0];
-            if ("ClientConnector".equals(contextBal.actionInfo.getConnectorInfo().getName())) {
+            if ("ClientConnector".equals(contextBallerina.actionInfo.getConnectorInfo().getName())) {
                 MetricServer metricServer = MetricServer.getInstance();
-                metricServer.getRequestsSize().update(contextBal.getCarbonMessage().getFullMessageLength());
-                contextTimer = metricServer.getResponsesTime().start();
+                metricServer.getBackendRequestsSize().update(contextBallerina.getCarbonMessage().getFullMessageLength());
+                contextTimer = metricServer.getBackendResponsesTime().start();
                 isClientConnector = true;
             }
         } catch (Throwable e) {
             isClientConnector = false;
         }
     }
-
 }
