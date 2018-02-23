@@ -34,7 +34,7 @@ public class Agent {
     public static void premain(String arguments, Instrumentation instrumentation) {
 
         logger.info("Premain");
-        /* Create an agent to attach to ballerina backend
+        /* Create an agent to attach to ballerina backend and client side
         *
         * define new private fields to BalConnectorCallback class
         * contextTimer and isClientConnector
@@ -54,7 +54,39 @@ public class Agent {
                         .method(ElementMatchers.nameContains("done"))
                         .intercept(Advice.to(MethodListener.class))
                 ).installOn(instrumentation);
+        /* Create an agent to attach to ballerina backend and client side
+        *
+        * Define new private fields to ChannelInboundHandlerAdapter class
+        * contextTimer and defaultHttpType
+        *
+        * Advice channelActive for start Metrics timer
+        * Advice channelInactive for stop Metrics timer
+        * Advice channelRead for get request size, response size and response status
+        *
+        */
+        new AgentBuilder.Default()
+                .with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
+                .type((ElementMatchers.nameEndsWith("ChannelInboundHandlerAdapter")))
+                .transform((builder, typeDescription, classLoader, module) -> builder
+                        .defineField("contextTimer", Timer.Context.class, Visibility.PRIVATE)
+                        .defineField("defaultHttpType", String.class, Visibility.PRIVATE)
+                        .method(ElementMatchers.nameEndsWith("channelActive"))
+                        .intercept(Advice.to(ChannelActiveAdvice.class))
+                        .method(ElementMatchers.nameEndsWith("channelInactive"))
+                        .intercept(Advice.to(ChannelInactiveAdvice.class))
+                        .method(ElementMatchers.nameEndsWith("channelRead"))
+                        .intercept(Advice.to(ChannelReaderAdvice.class))
+                ).installOn(instrumentation);
 
+//TODO need remove this and find another way to get backend response size
+        new AgentBuilder.Default()
+                .with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
+                .type((ElementMatchers.nameEndsWith("DefaultBalCallback")))
+                .transform(
+                        new AgentBuilder.Transformer.ForAdvice()
+                                .include(BackendResponseAdvice.class.getClassLoader())
+                                .advice(ElementMatchers.nameEndsWith("done"), BackendResponseAdvice.class.getName())
+                ).installOn(instrumentation);
     }
 }
 
