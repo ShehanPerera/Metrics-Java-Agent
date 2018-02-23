@@ -38,6 +38,7 @@ public class MetricServer {
     private Histogram apiRequestsSize;
     private Histogram backendResponseSize;
     private Histogram apiResponseSize;
+    private boolean isIdleStateHandler;
 
     private MetricServer() {
 
@@ -65,6 +66,7 @@ public class MetricServer {
                 "Backend Calls"), Level.INFO);
         apiResponsesTime = metricService.timer(MetricService.name("API Manager ",
                 "API Calls"), Level.INFO);
+        isIdleStateHandler= false;
     }
 
     public static MetricServer getInstance() {
@@ -94,7 +96,7 @@ public class MetricServer {
 
     public Histogram getBackendResponseSize() {
 
-        return backendRequestsSize;
+        return backendResponseSize;
     }
 
     public Histogram getApiResponseSize() {
@@ -112,4 +114,13 @@ public class MetricServer {
         return apiResponsesTime;
     }
 
+    public boolean getIdleStateHandler() {
+
+        return isIdleStateHandler;
+    }
+
+    public void setIdleStateHandler(boolean isIdleStateHandler) {
+
+        this.isIdleStateHandler = isIdleStateHandler;
+    }
 }
