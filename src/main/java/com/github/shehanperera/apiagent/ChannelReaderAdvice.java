@@ -44,11 +44,9 @@ public class ChannelReaderAdvice {
             if (parameters[1].getClass().getSimpleName().equals("DefaultHttpResponse")) {
                 DefaultHttpResponse defaultHttpResponse = (DefaultHttpResponse) parameters[1];
                 defaultHttpType = "response";
-                if (500 > defaultHttpResponse.status().code()&& defaultHttpResponse.status().code() >= 400 && isIdleStateHandler) {
+                if (500 > defaultHttpResponse.status().code() && defaultHttpResponse.status().code() >= 400 && isIdleStateHandler) {
                     metricServer.getApi4xxErrorRate().mark();
-                }
-                else if(defaultHttpResponse.status().code() >= 500)
-                {
+                } else if (defaultHttpResponse.status().code() >= 500) {
                     metricServer.getApi5xxErrorRate().mark();
                 }
             }
