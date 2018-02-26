@@ -1,17 +1,17 @@
 /*
- * Copyright 2018 Shehan Perera
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright 2018 Shehan Perera
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 package com.github.shehanperera.apiagent;
 
 import io.netty.handler.codec.http.DefaultHttpResponse;
@@ -44,8 +44,12 @@ public class ChannelReaderAdvice {
             if (parameters[1].getClass().getSimpleName().equals("DefaultHttpResponse")) {
                 DefaultHttpResponse defaultHttpResponse = (DefaultHttpResponse) parameters[1];
                 defaultHttpType = "response";
-                if (defaultHttpResponse.status().code() >= 400 && isIdleStateHandler) {
-                    metricServer.getApiErrorRate().mark();
+                if (500 > defaultHttpResponse.status().code()&& defaultHttpResponse.status().code() >= 400 && isIdleStateHandler) {
+                    metricServer.getApi4xxErrorRate().mark();
+                }
+                else if(defaultHttpResponse.status().code() >= 500)
+                {
+                    metricServer.getApi5xxErrorRate().mark();
                 }
             }
             if (defaultHttpType.equals("request")) {
@@ -56,8 +60,9 @@ public class ChannelReaderAdvice {
             if (defaultHttpType.equals("response")) {
                 DefaultLastHttpContent response = (DefaultLastHttpContent) parameters[1];
                 //TODO need to check is first non needed response size is equals to 166
-                if (response.content().readableBytes() != 166 && isIdleStateHandler) {
-                    metricServer.getApiResponseSize().update(response.content().readableBytes());
+                int apiResponseSize = response.content().readableBytes();
+                if (apiResponseSize != 173 && isIdleStateHandler) {
+                    metricServer.getApiResponseSize().update(apiResponseSize);
                 }
             }
         } catch (Exception e) {
