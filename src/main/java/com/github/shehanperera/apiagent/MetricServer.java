@@ -33,7 +33,8 @@ public class MetricServer {
     private Timer backendResponsesTime;
     private Timer apiResponsesTime;
     private Meter backendErrorRate;
-    private Meter apiErrorRate;
+    private Meter api4xxErrorRate;
+    private Meter api5xxErrorRate;
     private Histogram backendRequestsSize;
     private Histogram apiRequestsSize;
     private Histogram backendResponseSize;
@@ -52,8 +53,10 @@ public class MetricServer {
         metricService = metrics.getMetricService();
         backendErrorRate = metricService.meter(MetricService.name("API Manager ",
                 "Backend Error Rate "), Level.INFO);
-        apiErrorRate = metricService.meter(MetricService.name("API Manager ",
-                "API Error Rate "), Level.INFO);
+        api4xxErrorRate = metricService.meter(MetricService.name("API Manager ",
+                "API 4XX Error Rate "), Level.INFO);
+        api5xxErrorRate = metricService.meter(MetricService.name("API Manager ",
+                "API 5XX Error Rate "), Level.INFO);
         backendRequestsSize = metricService.histogram(MetricService.name("API Manager ",
                 "Backend Request Payload Size"), Level.INFO);
         apiRequestsSize = metricService.histogram(MetricService.name("API Manager ",
@@ -79,9 +82,13 @@ public class MetricServer {
         return backendErrorRate;
     }
 
-    public Meter getApiErrorRate() {
+    public Meter getApi4xxErrorRate() {
 
-        return apiErrorRate;
+        return api4xxErrorRate;
+    }
+    public Meter getApi5xxErrorRate() {
+
+        return api5xxErrorRate;
     }
 
     public Histogram getBackendRequestsSize() {
