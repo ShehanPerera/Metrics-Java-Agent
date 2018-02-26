@@ -15,7 +15,6 @@
 package com.github.shehanperera.apiagent;
 
 import net.bytebuddy.asm.Advice;
-import org.ballerinalang.bre.Context;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.metrics.core.Timer;
 
@@ -35,8 +34,7 @@ public class MethodListener {
     @Advice.OnMethodEnter
     public static void enterDoneMethod(@Advice.Argument(0) CarbonMessage carbonMessage,
                                        @Advice.FieldValue(value = "contextTimer") Timer.Context contextTimer,
-                                       @Advice.FieldValue(value = "isClientConnector") boolean isClientConnector,
-                                       @Advice.FieldValue(value = "context") Context context) {
+                                       @Advice.FieldValue(value = "isClientConnector") boolean isClientConnector) {
 
         MetricServer metricServer = MetricServer.getInstance();
         if (isClientConnector) {
