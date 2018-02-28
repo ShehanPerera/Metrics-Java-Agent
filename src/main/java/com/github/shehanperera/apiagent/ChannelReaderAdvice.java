@@ -44,6 +44,7 @@ public class ChannelReaderAdvice {
             if (parameters[1].getClass().getSimpleName().equals("DefaultHttpResponse")) {
                 DefaultHttpResponse defaultHttpResponse = (DefaultHttpResponse) parameters[1];
                 defaultHttpType = "response";
+                System.out.println(defaultHttpResponse);
                 if (500 > defaultHttpResponse.status().code() && defaultHttpResponse.status().code() >= 400 && isIdleStateHandler) {
                     metricServer.getApi4xxErrorRate().mark();
                 } else if (defaultHttpResponse.status().code() >= 500) {
@@ -54,10 +55,10 @@ public class ChannelReaderAdvice {
                 DefaultLastHttpContent request = (DefaultLastHttpContent) parameters[1];
                 metricServer.getApiRequestsSize().update(request.content().readableBytes());
             }
-
             if (defaultHttpType.equals("response")) {
                 DefaultLastHttpContent response = (DefaultLastHttpContent) parameters[1];
-                //TODO need to check is first non needed response size is equals to 166
+                //TODO need to check is first non needed response size is equals to 166(M13)
+                //TODO in new release (M19) first non needed response size is 173 and we have to remove this condition
                 int apiResponseSize = response.content().readableBytes();
                 if (apiResponseSize != 173 && isIdleStateHandler) {
                     metricServer.getApiResponseSize().update(apiResponseSize);
