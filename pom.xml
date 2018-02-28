@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <!--<parent>-->
-        <!--<groupId>org.wso2</groupId>-->
-        <!--<artifactId>wso2</artifactId>-->
-        <!--<version>5</version>-->
+    <!--<groupId>org.wso2</groupId>-->
+    <!--<artifactId>wso2</artifactId>-->
+    <!--<version>5</version>-->
     <!--</parent>-->
     <groupId>com.github.shehanperera.apiagent</groupId>
     <artifactId>agent-apim</artifactId>
@@ -91,7 +91,7 @@
         <dependency>
             <groupId>org.ballerinalang</groupId>
             <artifactId>ballerina-core</artifactId>
-            <version>0.89</version>
+            <version>0.963.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -103,7 +103,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        </dependencies>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>2.0.2-beta</version>
+        </dependency>
+    </dependencies>
     <name>agent-apim</name>
     <url>http://maven.apache.org</url>
     <properties>
