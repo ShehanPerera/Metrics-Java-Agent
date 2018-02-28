@@ -57,8 +57,9 @@ public class ChannelReaderAdvice {
             }
             if (defaultHttpType.equals("response")) {
                 DefaultLastHttpContent response = (DefaultLastHttpContent) parameters[1];
-                //TODO need to check is first non needed response size is equals to 166(M13)
-                //TODO in new release (M19) first non needed response size is 173 and we have to remove this condition
+                //TODO need to check is first non needed response size is equals to 166(API-3-M13)
+                //TODO in new release (API-3-M19) first non needed response size is 173 and we have to remove this
+                //condition
                 int apiResponseSize = response.content().readableBytes();
                 if (apiResponseSize != 173 && isIdleStateHandler) {
                     metricServer.getApiResponseSize().update(apiResponseSize);
