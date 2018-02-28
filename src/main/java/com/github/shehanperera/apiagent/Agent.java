@@ -36,19 +36,17 @@ public class Agent {
         logger.info("Premain");
         /* Create an agent to attach to ballerina backend and client side
         *
-        * define new private fields to BalConnectorCallback class
-        * contextTimer and isClientConnector
+        * define new private fields to BClientConnectorFutureListener class
         *
-        * Advice constructor for start Metrics timer, get request size
+        * Advice constructor for start Metrics timer
         * Advice done method for stop Metrics timer
         *
         */
         new AgentBuilder.Default()
                 .with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
-                .type((ElementMatchers.nameEndsWith("BalConnectorCallback")))
+                .type((ElementMatchers.nameEndsWith("BClientConnectorFutureListener")))
                 .transform((builder, typeDescription, classLoader, module) -> builder
                         .defineField("contextTimer", Timer.Context.class, Visibility.PRIVATE)
-                        .defineField("isClientConnector", boolean.class, Visibility.PRIVATE)
                         .constructor(ElementMatchers.any())
                         .intercept(Advice.to(ConstructorAdvice.class))
                         .method(ElementMatchers.nameContains("done"))
@@ -78,15 +76,6 @@ public class Agent {
                         .intercept(Advice.to(ChannelReaderAdvice.class))
                 ).installOn(instrumentation);
 
-//TODO need remove this and find another way to get backend response size
-        new AgentBuilder.Default()
-                .with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
-                .type((ElementMatchers.nameEndsWith("DefaultBalCallback")))
-                .transform(
-                        new AgentBuilder.Transformer.ForAdvice()
-                                .include(BackendResponseAdvice.class.getClassLoader())
-                                .advice(ElementMatchers.nameEndsWith("done"), BackendResponseAdvice.class.getName())
-                ).installOn(instrumentation);
     }
 }
 
