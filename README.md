@@ -7,10 +7,12 @@ https://docs.wso2.com/display/AM300/
 
 <b><h2>STEP 2</h2></b>
 Download Metrics-Java-Agent 
+
  `git clone https://github.com/ShehanPerera/Metrics-Java-Agent.git`
 
 <b><h2>STEP 3</h2></b>
 Install the package 
+
 `mvn clean install`
 
 <b><h2>STEP 4</h2></b>
