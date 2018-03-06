@@ -34,9 +34,11 @@ Run the API Manager service including the ballerina gateway
 
 <b><h2>STEP 7</h2></b>
 You can see the metrics in JMX 
-1.run JMX repoter by 
+1.run JMX reporter by 
+
   `jconsole`
 2.In ballerina process we can see Metrics for API Manager 
+
 ![screenshot from 2018-03-06 15-38-35](https://user-images.githubusercontent.com/29086284/37028949-c5a3a6fc-215b-11e8-8761-43521c9534cc.png)
 
 
